@@ -1,0 +1,5 @@
+﻿scenario,description,load_scale,gen_out_bus,branch_out_id
+S1,기준 상태 (부하 100%),1.0,,
+S2,전체 부하 15% 증가,1.15,,
+S3,버스 89 발전기 고장 정지,1.0,89,
+S4,선로 38 (버스 26-30) 고장 정지,1.0,,38

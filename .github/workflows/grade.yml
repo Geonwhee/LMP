@@ -1,0 +1,69 @@
+name: grade-submission
+
+# pull_request_target: 강의자 저장소의 (신뢰할 수 있는) 워크플로·코드로 실행된다.
+# 학생 PR 의 파일은 '데이터'로만 내려받고 절대 실행하지 않는다.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: grade-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4          # 기본값: 강의자 저장소(base) 코드만 받는다
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: .github/grader/requirements.txt
+      - run: pip install -r .github/grader/requirements.txt
+      - name: 제출 파일 내려받기 (실행하지 않음)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/sub"
+          gh api -H "Accept: application/vnd.github.raw" "repos/$HEAD_REPO/contents/submission/submission.enc?ref=$HEAD_SHA" > "$RUNNER_TEMP/sub/submission.enc" || rm -f "$RUNNER_TEMP/sub/submission.enc"
+          gh api -H "Accept: application/vnd.github.raw" "repos/$HEAD_REPO/contents/submission_info.json?ref=$HEAD_SHA" > "$RUNNER_TEMP/sub/submission_info.json" || true
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --jq '.[].filename' > "$RUNNER_TEMP/sub/changed.txt"
+      - name: 채점
+        env:
+          GRADER_PRIVATE_KEY: ${{ secrets.GRADER_PRIVATE_KEY }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python .github/grader/run.py "$RUNNER_TEMP/sub" "$RUNNER_TEMP/out"
+      - name: PR 에 결과 코멘트
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/out/comment.md"
+
+  leaderboard:
+    needs: grade
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: leaderboard
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: 리더보드 다시 만들기
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LEADERBOARD_ISSUE: ${{ vars.LEADERBOARD_ISSUE }}
+        run: python .github/grader/leaderboard.py

@@ -1,0 +1,22 @@
+name: rebuild-leaderboard
+
+# 리더보드를 수동으로 다시 만들 때 (Actions 탭 → rebuild-leaderboard → Run workflow)
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          LEADERBOARD_ISSUE: ${{ vars.LEADERBOARD_ISSUE }}
+        run: python .github/grader/leaderboard.py

@@ -1,0 +1,10 @@
+# fork 는 공개 저장소입니다. 풀이와 답은 절대 올리지 마세요.
+answers/
+work/
+student_private.json
+
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.vscode/
+.DS_Store
