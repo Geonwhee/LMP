@@ -22,6 +22,8 @@ PyPower 는 MATPOWER 를 Python 으로 옮긴 패키지라 MATLAB 은 필요 없
 
 **최적화 솔버는 따로 설치하지 않아도 됩니다.** `rundcopf` 는 PyPower 내장 솔버(PIPS)로 풀고, 직접 정식화하려면 SciPy 에 들어 있는 무료 HiGHS (`scipy.optimize.linprog`) 를 쓰면 됩니다 → `examples/lecture_3bus_linprog.py`. Gurobi 같은 상용 솔버는 필요 없습니다.
 
+**MATLAB + MATPOWER 로 계산하고 싶다면 (선택)** → [matlab/README.md](matlab/README.md). 답안 형식과 제출 방법은 같고, 제출 도구 때문에 위 Python 환경도 필요합니다.
+
 과제 데이터는 Clone 할 때 함께 내려옵니다 → [data/README.md](data/README.md)
 
 막히면 에러 메시지를 그대로 AI(Claude Code · Codex)에게 붙여넣으세요.
@@ -37,6 +39,7 @@ data/wind_farms.csv        과제 3 · 5 풍력단지 (버스, 용량, 비용)
 data/raw/                  원본 MATPOWER 형식 파일 (참고용)
 examples/lecture_3bus.py   PyPower 사용 예시
 examples/lecture_3bus_linprog.py  무료 솔버(HiGHS)로 DC-OPF 직접 풀기
+matlab/                    (선택) MATLAB · MATPOWER 예제
 tools/validate_answers.py  답안 형식 검사
 tools/submit.py            답안 암호화 → submission/submission.enc
 work/                      ← 직접 만들어 풀이 코드를 두는 곳 (git 에 올라가지 않음)
