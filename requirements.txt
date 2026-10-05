@@ -1,0 +1,7 @@
+# conda 를 쓰지 않을 때:  pip install -r requirements.txt
+numpy==2.1.*
+scipy==1.16.*
+pandas==2.3.*
+matplotlib
+PYPOWER==5.1.19
+cryptography

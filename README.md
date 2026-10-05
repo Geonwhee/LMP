@@ -17,6 +17,13 @@ PyPower 로 송전망을 고려한 전기 가격(LMP)을 계산하고, 송전 �
 | 3 | `python check_environment.py` → 모두 **[성공]** |
 | 4 | `python examples/lecture_3bus.py` → 강의 3-bus 결과 (LMP = 20, 50, 80) 확인 |
 
+conda 를 쓰지 않는다면 2단계 대신 `pip install -r requirements.txt` (Python 3.11 권장).
+PyPower 는 MATPOWER 를 Python 으로 옮긴 패키지라 MATLAB 은 필요 없습니다.
+
+**최적화 솔버는 따로 설치하지 않아도 됩니다.** `rundcopf` 는 PyPower 내장 솔버(PIPS)로 풀고, 직접 정식화하려면 SciPy 에 들어 있는 무료 HiGHS (`scipy.optimize.linprog`) 를 쓰면 됩니다 → `examples/lecture_3bus_linprog.py`. Gurobi 같은 상용 솔버는 필요 없습니다.
+
+과제 데이터는 Clone 할 때 함께 내려옵니다 → [data/README.md](data/README.md)
+
 막히면 에러 메시지를 그대로 AI(Claude Code · Codex)에게 붙여넣으세요.
 
 ## 2. 폴더 구성
@@ -27,7 +34,9 @@ cases/case118_pglib.py     IEEE 118 (PGLib 버전: 선로 열용량 한계 포�
 data/scenarios.csv         과제 2 · 4 시나리오
 data/profile_24h.csv       과제 3 · 5 시간별 부하 배율과 풍력 이용률
 data/wind_farms.csv        과제 3 · 5 풍력단지 (버스, 용량, 비용)
+data/raw/                  원본 MATPOWER 형식 파일 (참고용)
 examples/lecture_3bus.py   PyPower 사용 예시
+examples/lecture_3bus_linprog.py  무료 솔버(HiGHS)로 DC-OPF 직접 풀기
 tools/validate_answers.py  답안 형식 검사
 tools/submit.py            답안 암호화 → submission/submission.enc
 work/                      ← 직접 만들어 풀이 코드를 두는 곳 (git 에 올라가지 않음)
